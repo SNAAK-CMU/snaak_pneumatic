@@ -8,7 +8,8 @@ import time
 class VacuumControlNode(Node):
     def __init__(self):
         super().__init__('vacuum_control')
-        self.serial_conn = serial.Serial('/dev/ttyUSB0', 115200, timeout=1)
+        self.serial_conn = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        # self.serial_conn = serial.Serial('COM12', 115200, timeout=1)
 
         self.enable_srv = self.create_service(Trigger, 'enable_vacuum', self.enable_callback)
         self.disable_srv = self.create_service(Trigger, 'disable_vacuum', self.disable_callback)
