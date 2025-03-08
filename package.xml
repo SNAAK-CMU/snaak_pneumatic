@@ -7,6 +7,10 @@
   <maintainer email="rodrigo.catto7@gmail.com">rlc</maintainer>
   <license>TODO: License declaration</license>
 
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>std_srvs</exec_depend>
+  <exec_depend>example_interfaces</exec_depend>
+
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
