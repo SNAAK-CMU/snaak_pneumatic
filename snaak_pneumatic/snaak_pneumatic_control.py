@@ -16,6 +16,8 @@ class VacuumControlNode(Node):
         self.disable_srv = self.create_service(Trigger, 'snaak_pneumatic/disable_vacuum', self.disable_callback)
         self.eject_srv = self.create_service(SetBool, 'snaak_pneumatic/eject_vacuum', self.eject_callback)
 
+        self.send_command("disable")
+        
     def send_command(self, command):
         self.serial_conn.write((command + '\n').encode('utf-8'))
         time.sleep(0.1)  # Small delay to ensure command is processed
