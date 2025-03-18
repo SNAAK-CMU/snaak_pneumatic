@@ -8,13 +8,16 @@ import time
 class VacuumControlNode(Node):
     def __init__(self):
         super().__init__('vacuum_control')
-        self.serial_conn = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
+        self.serial_conn = serial.Serial('/dev/clearcore', 115200, timeout=1)
+        # self.serial_conn = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
         # self.serial_conn = serial.Serial('COM12', 115200, timeout=1)
 
-        self.enable_srv = self.create_service(Trigger, 'enable_vacuum', self.enable_callback)
-        self.disable_srv = self.create_service(Trigger, 'disable_vacuum', self.disable_callback)
-        self.eject_srv = self.create_service(SetBool, 'eject_vacuum', self.eject_callback)
+        self.enable_srv = self.create_service(Trigger, 'snaak_pneumatic/enable_vacuum', self.enable_callback)
+        self.disable_srv = self.create_service(Trigger, 'snaak_pneumatic/disable_vacuum', self.disable_callback)
+        self.eject_srv = self.create_service(SetBool, 'snaak_pneumatic/eject_vacuum', self.eject_callback)
 
+        self.send_command("disable")
+        
     def send_command(self, command):
         self.serial_conn.write((command + '\n').encode('utf-8'))
         time.sleep(0.1)  # Small delay to ensure command is processed
