@@ -32,7 +32,8 @@ class VacuumControlNode(Node):
         return response
 
     def eject_callback(self, request, response):
-        duration = max(100, min(5000, int(request.data)))  # Clamp duration between 100ms and 5000ms
+        # duration = max(100, min(5000, int(request.data)))  # Clamp duration between 100ms and 5000ms
+        duration = 1000
         self.send_command(f"eject {duration}")
         response.success = True
         response.message = f"Vacuum ejected for {duration} ms"
