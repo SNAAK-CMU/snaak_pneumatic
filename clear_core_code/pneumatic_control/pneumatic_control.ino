@@ -1,6 +1,6 @@
 #include "ClearCore.h"
 
-#define InputConnector ConnectorIO2
+#define InputConnector1 ConnectorIO2
 #define ENABLE_VACUUM_PIN IO0
 #define EJECT_VACUUM_PIN IO1
 #define ENABLE_BTN_PIN IO2
@@ -10,7 +10,7 @@
 #define baudRateInputPort 115200
 #define isTtlInputPort false
 
-bool enableButtonValue;
+bool toggleVacuum;
 PinStatus ejectButtonValue;
 
 bool isEnable = false;
@@ -41,34 +41,48 @@ void setup() {
 
 void loop() {
   // Read Buttons Values
-  enableButtonValue = InputConnector.InputRisen();
+  toggleVacuum = InputConnector1.InputRisen();
   ejectButtonValue = digitalRead(EJECT_BTN_PIN);
 
   // Read Serial
   input = Serial.read();
+  String command = "";
 
+  // Convert Serial to commands: enable, disable and eject
   if (input != -1) {
-    String command = "";
     while (Serial.available()) {
       command += (char)input;
       input = Serial.read();
     }
-    
-    if (command == "enable" || isEnable) {
-      isEnable = true;
-      digitalWrite(ENABLE_VACUUM_PIN, HIGH);
-    } 
-    if (isEnable && command == "disable") {
-      isEnable = false;
-      digitalWrite(ENABLE_VACUUM_PIN, LOW);
-    } 
-    if (command.startsWith("eject")) {
-      int duration = command.substring(5).toInt();
-      digitalWrite(EJECT_VACUUM_PIN, HIGH);
-      delay(duration);
-      digitalWrite(EJECT_VACUUM_PIN, LOW);
-    }
   }
+
+  // Enable Vacuum
+  if ((command == "enable") || (toggleVacuum == true) || (isEnable)) {
+    isEnable = true;
+    toggleVacuum = false;
+    digitalWrite(ENABLE_VACUUM_PIN, HIGH);
+  } 
+
+  // Disable Vacuum
+  if ( ((isEnable) && (command == "disable"))  ) {
+    isEnable = false;
+    toggleVacuum = false;
+    digitalWrite(ENABLE_VACUUM_PIN, LOW);
+  } 
+
+  // Eject Vacuum
+  if ((command.startsWith("eject")) || (ejectButtonValue == true)) {
+    int duration = command.substring(5).toInt();
+    duration = max(duration, 500);
+
+    isEnable = false;
+    digitalWrite(ENABLE_VACUUM_PIN, LOW);
+    
+    digitalWrite(EJECT_VACUUM_PIN, HIGH);
+    delay(duration);
+    digitalWrite(EJECT_VACUUM_PIN, LOW);
+  }
+
   
   delay(10);
 }
