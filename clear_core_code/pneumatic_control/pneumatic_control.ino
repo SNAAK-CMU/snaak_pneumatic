@@ -1,8 +1,9 @@
 #include "ClearCore.h"
 
 #define InputConnector1 ConnectorIO2
-#define ENABLE_VACUUM_PIN IO0
-#define EJECT_VACUUM_PIN IO1
+#define ENABLE_VACUUM_PIN_1 IO4
+#define ENABLE_VACUUM_PIN_2 IO5
+
 #define ENABLE_BTN_PIN IO2
 #define EJECT_BTN_PIN IO3
 
@@ -29,14 +30,14 @@ void setup() {
   }
 
   // Define inputs and outputs
-  pinMode(ENABLE_VACUUM_PIN, OUTPUT);
-  pinMode(EJECT_VACUUM_PIN, OUTPUT);
+  pinMode(ENABLE_VACUUM_PIN_1, OUTPUT);
+  pinMode(ENABLE_VACUUM_PIN_2, OUTPUT);
   pinMode(ENABLE_BTN_PIN, INPUT);
   pinMode(EJECT_BTN_PIN, INPUT);
 
   // Reset Pneumatic Ports
-  digitalWrite(ENABLE_VACUUM_PIN, LOW);
-  digitalWrite(EJECT_VACUUM_PIN, LOW);
+  digitalWrite(ENABLE_VACUUM_PIN_1, HIGH);
+  digitalWrite(ENABLE_VACUUM_PIN_2, HIGH);
 }
 
 void loop() {
@@ -60,14 +61,16 @@ void loop() {
   if ((command == "enable") || (toggleVacuum == true) || (isEnable)) {
     isEnable = true;
     toggleVacuum = false;
-    digitalWrite(ENABLE_VACUUM_PIN, HIGH);
+    digitalWrite(ENABLE_VACUUM_PIN_1, LOW);
+    digitalWrite(ENABLE_VACUUM_PIN_2, LOW);
   } 
 
   // Disable Vacuum
   if ( ((isEnable) && (command == "disable"))  ) {
     isEnable = false;
     toggleVacuum = false;
-    digitalWrite(ENABLE_VACUUM_PIN, LOW);
+    digitalWrite(ENABLE_VACUUM_PIN_1, HIGH);
+    digitalWrite(ENABLE_VACUUM_PIN_2, HIGH);
   } 
 
   // Eject Vacuum
@@ -76,11 +79,8 @@ void loop() {
     duration = max(duration, 500);
 
     isEnable = false;
-    digitalWrite(ENABLE_VACUUM_PIN, LOW);
-    
-    digitalWrite(EJECT_VACUUM_PIN, HIGH);
-    delay(duration);
-    digitalWrite(EJECT_VACUUM_PIN, LOW);
+    digitalWrite(ENABLE_VACUUM_PIN_1, HIGH);
+    digitalWrite(ENABLE_VACUUM_PIN_2, HIGH);
   }
 
   
