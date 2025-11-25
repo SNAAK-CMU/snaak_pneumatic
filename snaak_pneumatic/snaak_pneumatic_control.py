@@ -12,7 +12,8 @@ class VacuumControlNode(Node):
         # self.serial_conn = serial.Serial('/dev/ttyACM0', 115200, timeout=1)
         # self.serial_conn = serial.Serial('COM12', 115200, timeout=1)
 
-        self.enable_srv = self.create_service(Trigger, 'snaak_pneumatic/enable_vacuum', self.enable_callback)
+        self.enable_vacuum_srv = self.create_service(Trigger, 'snaak_pneumatic/enable_vacuum', self.enable_vacuum_callback)
+        self.enable_gripper_srv = self.create_service(Trigger, 'snaak_pneumatic/enable_gripper', self.enable_gripper_callback)
         self.disable_srv = self.create_service(Trigger, 'snaak_pneumatic/disable_vacuum', self.disable_callback)
         self.eject_srv = self.create_service(SetBool, 'snaak_pneumatic/eject_vacuum', self.eject_callback)
 
@@ -22,10 +23,16 @@ class VacuumControlNode(Node):
         self.serial_conn.write((command + '\n').encode('utf-8'))
         time.sleep(0.1)  # Small delay to ensure command is processed
 
-    def enable_callback(self, request, response):
+    def enable_vacuum_callback(self, request, response):
         self.send_command("enable")
         response.success = True
         response.message = "Vacuum enabled"
+        return response
+    
+    def enable_gripper_callback(self, request, response):
+        self.send_command("gripper")
+        response.success = True
+        response.message = "Gripper enabled"
         return response
 
     def disable_callback(self, request, response):
